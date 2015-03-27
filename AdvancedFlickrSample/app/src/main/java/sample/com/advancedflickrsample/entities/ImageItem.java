@@ -1,19 +1,15 @@
 package sample.com.advancedflickrsample.entities;
 
-import javax.inject.Inject;
-
 /**
  * Created by hzaied on 3/26/15.
  */
 public class ImageItem {
 
     public String mUrl;
-    public String mName;
-    public int mId;
+    public String mTitle;
 
-    public ImageItem(String url, String name, int id) {
+    public ImageItem(String url, String title) {
         mUrl = url;
-        mName = name;
-        mId = id;
+        mTitle = title;
     }
 }
