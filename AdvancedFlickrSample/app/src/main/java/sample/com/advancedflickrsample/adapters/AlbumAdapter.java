@@ -1,4 +1,4 @@
-package sample.com.advancedflickrsample.adapter;
+package sample.com.advancedflickrsample.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import sample.com.advancedflickrsample.R;
 import sample.com.advancedflickrsample.entities.AlbumViewHolder;
@@ -19,10 +20,10 @@ import sample.com.advancedflickrsample.entities.ImageItem;
  */
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder> {
     Context mContext;
-    ArrayList<ImageItem> mItemsList;
+    List<ImageItem> mItemsList;
     AlbumViewHolder.OnViewHolderClickListener mListener;
 
-    public AlbumAdapter(Context context, ArrayList<ImageItem> itemsList,
+    public AlbumAdapter(Context context, List<ImageItem> itemsList,
                         AlbumViewHolder.OnViewHolderClickListener listener) {
         super();
         mContext = context;

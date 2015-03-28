@@ -14,15 +14,10 @@ import sample.com.advancedflickrsample.entities.ImageItem;
 /**
  * Created by hzaied on 3/27/15.
  */
-public class FlickrServiceParser extends ApiParser<ImageItem> {
+public class FlickrServiceParser extends ApiParser<List<ImageItem>> {
 
     @Override
-    public ImageItem parse(String data) {
-        return null;
-    }
-
-    @Override
-    public List<ImageItem> parseList(String data) {
+    public List<ImageItem> parse(String data) {
         try {
             // Parse the response from the flickr API.
             JSONObject responseJSON = new JSONObject(data);

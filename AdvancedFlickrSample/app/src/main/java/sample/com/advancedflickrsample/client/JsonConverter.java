@@ -11,7 +11,6 @@ import retrofit.converter.Converter;
 import retrofit.mime.TypedInput;
 import retrofit.mime.TypedOutput;
 import sample.com.advancedflickrsample.client.parsers.ApiParser;
-import sample.com.advancedflickrsample.client.parsers.FlickrServiceParser;
 
 /**
  * Created by hzaied on 3/27/15.
@@ -31,11 +30,7 @@ public class JsonConverter<T> implements Converter {
             String string = fromStream(in);
             in.close(); // we are responsible to close the InputStream after use
 
-            if (String.class.equals(type)) {
-                return string;
-            } else {
-                return mParser.parseList(string);
-            }
+            return mParser.parse(string);
         } catch (Exception e) { // a lot may happen here, whatever happens
             throw new ConversionException(e); // wrap it into ConversionException so retrofit can process it
         }

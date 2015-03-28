@@ -17,10 +17,8 @@ public class AlbumDetailActivity extends ActionBarActivity {
     public static final String EXTRA_ALBUM_ART_URL = "EXTRA_ALBUM_ART_URL";
     public static final String EXTRA_ALBUM_TITLE = "EXTRA_ALBUM_TITLE";
 
-    @InjectView(R.id.album_art)
-    ImageView mAlbumArt;
-    @InjectView(R.id.title)
-    TextView mTitle;
+    @InjectView(R.id.album_art) ImageView mAlbumArt;
+    @InjectView(R.id.title) TextView mTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

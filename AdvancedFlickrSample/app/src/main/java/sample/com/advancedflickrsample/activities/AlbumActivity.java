@@ -4,8 +4,8 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -13,25 +13,28 @@ import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import retrofit.RestAdapter;
 import sample.com.advancedflickrsample.R;
-import sample.com.advancedflickrsample.adapter.AlbumAdapter;
-import sample.com.advancedflickrsample.client.FlickrService;
-import sample.com.advancedflickrsample.client.JsonConverter;
-import sample.com.advancedflickrsample.client.parsers.FlickrServiceParser;
+import sample.com.advancedflickrsample.adapters.AlbumAdapter;
 import sample.com.advancedflickrsample.entities.AlbumViewHolder;
 import sample.com.advancedflickrsample.entities.ImageItem;
+import sample.com.advancedflickrsample.loaders.ApiRequestLoader;
 
 
-public class AlbumActivity extends ActionBarActivity {
+public class AlbumActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<List<ImageItem>> {
 
     @InjectView(R.id.album_list)
     RecyclerView mAlbumListRecyclerView;
+    @InjectView(R.id.loading_progress)
+    ProgressBar mLoadingProgress;
+
+
+    private static final int FLICKR_API_LOADER_ID = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,81 +48,10 @@ public class AlbumActivity extends ActionBarActivity {
     private void populateList() {
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mAlbumListRecyclerView.setLayoutManager(layoutManager);
+        mLoadingProgress.setVisibility(View.VISIBLE);
 
-
-        final ArrayList<ImageItem> items = new ArrayList<>();
-
-        final Handler handler = new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message msg) {
-                AlbumAdapter adapter = new AlbumAdapter(AlbumActivity.this, items, new AlbumViewHolder.OnViewHolderClickListener() {
-                    @Override
-                    public void onViewHolderClicked(AlbumViewHolder viewHolder) {
-                        String albumArtUrl = items.get(viewHolder.getPosition()).mUrl;
-                        String albumTitle = items.get(viewHolder.getPosition()).mTitle;
-
-                        Intent intent = new Intent(AlbumActivity.this, AlbumDetailActivity.class);
-                        intent.putExtra(AlbumDetailActivity.EXTRA_ALBUM_ART_URL, albumArtUrl);
-                        intent.putExtra(AlbumDetailActivity.EXTRA_ALBUM_TITLE, albumTitle);
-
-                        // Showing the new screen with animation in case of lollipop or higher.
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(AlbumActivity.this,
-                                    Pair.create((View) viewHolder.mAlbumArt, getString(R.string.album_art_string)),
-                                    Pair.create((View) viewHolder.mAlbumTitle, getString(R.string.album_title_string)));
-                            startActivity(intent, options.toBundle());
-                        } else {
-                            startActivity(intent);
-                        }
-                    }
-                });
-                mAlbumListRecyclerView.setAdapter(adapter);
-                return false;
-            }
-        });
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                RestAdapter restAdapter = new RestAdapter.Builder()
-                        .setEndpoint("https://api.flickr.com")
-                        .setConverter(new JsonConverter(new FlickrServiceParser()))
-                        .build();
-
-                // Call the flickr explor webservice.
-                FlickrService flickrService = restAdapter.create(FlickrService.class);
-                items.addAll(flickrService.getFlickrExplorList("flickr.interestingness.getList", "json"));
-
-                handler.sendEmptyMessage(0);
-            }
-        }).start();
-
-        // TODO: remove the resources and add the url and the name.
-//        items.add(new ImageItem("", "", R.drawable.christina));
-//        items.add(new ImageItem("", "", R.drawable.ellie));
-//        items.add(new ImageItem("", "", R.drawable.foster));
-//        items.add(new ImageItem("", "", R.drawable.keane));
-//        items.add(new ImageItem("", "", R.drawable.kodaline));
-//        items.add(new ImageItem("", "", R.drawable.pinkrobots));
-//
-//        AlbumAdapter adapter = new AlbumAdapter(this, items, new AlbumViewHolder.OnViewHolderClickListener() {
-//            @Override
-//            public void onViewHolderClicked(AlbumViewHolder viewHolder) {
-//                int albumArtResId = items.get(viewHolder.getPosition() % items.size()).mId;
-//                Intent intent = new Intent(AlbumActivity.this, AlbumDetailActivity.class);
-//                intent.putExtra(AlbumDetailActivity.EXTRA_ALBUM_ART_URL, albumArtResId);
-//
-//                // Showing the new screen with animation in case of lollipop or higher.
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(AlbumActivity.this,
-//                            Pair.create((View) viewHolder.mAlbumArt, getString(R.string.album_art_string)));
-//                    startActivity(intent, options.toBundle());
-//                } else {
-//                    startActivity(intent);
-//                }
-//            }
-//        });
-//        mAlbumListRecyclerView.setAdapter(adapter);
+        // Start the loading of data from the webservice in the background.
+        getSupportLoaderManager().initLoader(FLICKR_API_LOADER_ID, null, this);
     }
 
 
@@ -143,5 +75,43 @@ public class AlbumActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public Loader<List<ImageItem>> onCreateLoader(int id, Bundle args) {
+        return new ApiRequestLoader(this);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<ImageItem>> loader) {
+        mAlbumListRecyclerView.setAdapter(null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<ImageItem>> loader, final List<ImageItem> data) {
+        // Handle the initialization of the list with the new data.
+        AlbumAdapter adapter = new AlbumAdapter(AlbumActivity.this, data, new AlbumViewHolder.OnViewHolderClickListener() {
+            @Override
+            public void onViewHolderClicked(AlbumViewHolder viewHolder) {
+                String albumArtUrl = data.get(viewHolder.getPosition()).mUrl;
+                String albumTitle = data.get(viewHolder.getPosition()).mTitle;
+
+                Intent intent = new Intent(AlbumActivity.this, AlbumDetailActivity.class);
+                intent.putExtra(AlbumDetailActivity.EXTRA_ALBUM_ART_URL, albumArtUrl);
+                intent.putExtra(AlbumDetailActivity.EXTRA_ALBUM_TITLE, albumTitle);
+
+                // Showing the details activity with animation in case of lollipop or higher.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(AlbumActivity.this,
+                            Pair.create((View) viewHolder.mAlbumArt, getString(R.string.album_art_string)),
+                            Pair.create((View) viewHolder.mAlbumTitle, getString(R.string.album_title_string)));
+                    startActivity(intent, options.toBundle());
+                } else {
+                    startActivity(intent);
+                }
+            }
+        });
+        mAlbumListRecyclerView.setAdapter(adapter);
+        mLoadingProgress.setVisibility(View.GONE);
     }
 }

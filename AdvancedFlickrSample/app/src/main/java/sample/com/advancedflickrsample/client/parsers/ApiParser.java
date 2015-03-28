@@ -8,5 +8,5 @@ import java.util.List;
 public abstract class ApiParser<T> {
 
     public abstract T parse(String data);
-    public abstract List<T> parseList(String data);
+
 }
