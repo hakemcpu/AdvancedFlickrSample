@@ -8,27 +8,30 @@ import android.view.ViewGroup;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import sample.com.advancedflickrsample.R;
+import sample.com.advancedflickrsample.entities.AlbumItem;
 import sample.com.advancedflickrsample.entities.AlbumViewHolder;
-import sample.com.advancedflickrsample.entities.ImageItem;
 
 /**
  * Created by hzaied on 3/25/15.
  */
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumViewHolder> {
     Context mContext;
-    List<ImageItem> mItemsList;
+    List<AlbumItem> mItemsList;
     AlbumViewHolder.OnViewHolderClickListener mListener;
 
-    public AlbumAdapter(Context context, List<ImageItem> itemsList,
+    public AlbumAdapter(Context context, List<AlbumItem> itemsList,
                         AlbumViewHolder.OnViewHolderClickListener listener) {
         super();
         mContext = context;
         mItemsList = itemsList;
         mListener = listener;
+    }
+
+    public void setItemsList(List<AlbumItem> itemsList) {
+        this.mItemsList = itemsList;
     }
 
     @Override
