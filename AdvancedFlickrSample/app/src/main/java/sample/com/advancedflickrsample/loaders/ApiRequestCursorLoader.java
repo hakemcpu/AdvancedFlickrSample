@@ -1,8 +1,8 @@
 package sample.com.advancedflickrsample.loaders;
 
 import android.content.Context;
+import android.database.Cursor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit.RestAdapter;
@@ -15,16 +15,16 @@ import sample.com.advancedflickrsample.entities.AlbumItem;
 /**
  * Created by hzaied on 3/28/15.
  */
-public class ApiRequestLoader extends AbstractLoader<List<AlbumItem>> {
+public class ApiRequestCursorLoader extends AbstractLoader<Cursor> {
     private boolean mForceUpdate = false;
 
-    public ApiRequestLoader(Context context, boolean forceUpdate) {
+    public ApiRequestCursorLoader(Context context, boolean forceUpdate) {
         super(context);
         mForceUpdate = forceUpdate;
     }
 
     @Override
-    public List<AlbumItem> loadInBackground() {
+    public Cursor loadInBackground() {
         AlbumsDataSource dataSource = new AlbumsDataSource(getContext());
         dataSource.open();
 
@@ -32,9 +32,10 @@ public class ApiRequestLoader extends AbstractLoader<List<AlbumItem>> {
             dataSource.deleteAll();
             callApi(dataSource);
         }
-        List<AlbumItem> items = dataSource.getAllAlbums();
+
+        Cursor cursor = dataSource.getAllAlbumsAsCursor();
         dataSource.close();
-        return items;
+        return cursor;
     }
 
     private void callApi(AlbumsDataSource dataSource) {

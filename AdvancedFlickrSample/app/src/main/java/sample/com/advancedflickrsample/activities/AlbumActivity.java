@@ -81,6 +81,17 @@ public class AlbumActivity extends ActionBarActivity implements LoaderManager.Lo
 
     @Override
     public void onLoadFinished(Loader<List<AlbumItem>> loader, final List<AlbumItem> data) {
+        // Incase of empty list update.
+        if (data == null || data.isEmpty()) {
+            mLoadingProgress.setVisibility(View.VISIBLE);
+            mSwipeToRefresh.setRefreshing(true);
+
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("force_load", true);
+            getSupportLoaderManager().restartLoader(FLICKR_API_LOADER_ID, bundle, this);
+            return;
+        }
+
         // Handle the initialization of the list with the new data.
         AlbumAdapter adapter = new AlbumAdapter(AlbumActivity.this, data, new AlbumViewHolder.OnViewHolderClickListener() {
             @Override
@@ -125,7 +136,8 @@ public class AlbumActivity extends ActionBarActivity implements LoaderManager.Lo
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_gridview) {
+            startActivity(new Intent(this, AlbumGridViewActivity.class));
             return true;
         }
 

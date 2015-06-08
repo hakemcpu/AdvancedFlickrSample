@@ -6,22 +6,21 @@ import android.database.sqlite.SQLiteDatabase;
 import sample.com.advancedflickrsample.database.DatabaseHelper;
 
 /**
- * Created by hzaied on 4/3/15.
+ * Abstract data source class for the manging the database for different data source types.
  */
 public abstract class DataSource {
 
     protected DatabaseHelper mDbHelper;
-    protected SQLiteDatabase mDatabase;
 
     protected DataSource(Context context) {
         this.mDbHelper = new DatabaseHelper(context);
     }
 
     public void open() {
-        mDatabase = mDbHelper.getWritableDatabase();
+        mDbHelper.openDb();
     }
 
     public void close() {
-        mDbHelper.close();
+        mDbHelper.closeDb();
     }
 }

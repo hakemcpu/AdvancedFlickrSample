@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import sample.com.advancedflickrsample.database.DataSource.AlbumsDataSource;
@@ -58,7 +59,7 @@ public class FlickrServiceParser extends ApiParser<List<AlbumItem>> {
         // A Photo is generated from multiple parts as shown in the below
         // example:
         // https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg
-        String photoURLFormate = "https://farm%s.staticflickr.com/%s/%s_%s.jpg";
+        String photoURLFormat = "https://farm%s.staticflickr.com/%s/%s_%s.jpg";
 
         String farmId = photoObject.getString("farm");
         String serverId = photoObject.getString("server");
@@ -66,8 +67,8 @@ public class FlickrServiceParser extends ApiParser<List<AlbumItem>> {
         String secret = photoObject.getString("secret");
         String title = photoObject.getString("title");
 
-        String photoUrl = String.format(photoURLFormate, farmId, serverId, photoId, secret);
-        mDataSource.createAlbum(photoUrl, title);
+        String photoUrl = String.format(photoURLFormat, farmId, serverId, photoId, secret);
+        mDataSource.createAlbum(photoUrl, title, Calendar.getInstance().getTimeInMillis());
         return new AlbumItem(photoUrl, title);
     }
 }
