@@ -21,14 +21,11 @@ import sample.com.advancedflickrsample.entities.AlbumViewHolder;
 public class AlbumCursorAdapter extends CursorAdapter {
     Context mContext;
     Cursor mCursor;
-    AlbumViewHolder.OnViewHolderClickListener mListener;
 
-    public AlbumCursorAdapter(Context context, Cursor cursor,
-                              AlbumViewHolder.OnViewHolderClickListener listener) {
+    public AlbumCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor, false);
         mContext = context;
         mCursor = cursor;
-        mListener = listener;
     }
 
     @Override

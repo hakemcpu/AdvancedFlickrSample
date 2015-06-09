@@ -24,7 +24,7 @@ import sample.com.advancedflickrsample.loaders.ApiRequestCursorLoader;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class AlbumListViewActivityFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,
+public class AlbumGridViewActivityFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,
         LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
     @InjectView(R.id.album_list)
@@ -36,7 +36,7 @@ public class AlbumListViewActivityFragment extends Fragment implements SwipeRefr
 
     private static final int FLICKR_API_LOADER_ID = 1001;
 
-    public AlbumListViewActivityFragment() {
+    public AlbumGridViewActivityFragment() {
     }
 
     @Override
@@ -91,7 +91,7 @@ public class AlbumListViewActivityFragment extends Fragment implements SwipeRefr
         }
 
         // Handle the initialization of the list with the new data.
-        AlbumCursorAdapter adapter = new AlbumCursorAdapter(getActivity(), data, null);
+        AlbumCursorAdapter adapter = new AlbumCursorAdapter(getActivity(), data);
         mAlbumGridView.setAdapter(adapter);
         mAlbumGridView.setOnItemClickListener(this);
         mLoadingProgress.setVisibility(View.GONE);
